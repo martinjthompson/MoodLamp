@@ -1,1 +1,5 @@
 /* TODO: put your application-specific CSS here */
+body.palm-default {
+    backgroundColor: "#ff0000";
+}
+ 

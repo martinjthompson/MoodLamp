@@ -1,7 +1,7 @@
 {
 	"id": "com.mijiti.moodlamp",
 	"version": "1.0.0",
-	"vendor": "My Company",
+	"vendor": "Mijiti",
 	"type": "web",
 	"main": "index.html",
 	"title": "Mood Lamp",
