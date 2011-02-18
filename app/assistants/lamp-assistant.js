@@ -5,19 +5,28 @@ function LampAssistant() {
 	   that needs the scene controller should be done in the setup function below. */
 }
 var    bg;
-LampAssistant.prototype.onClick = function(event) {
-	bg.style.backgroundColor = "#600000";
-	this.controller.get("lamp-bg").update("#####");
-	this.controller.document.getElementsByTagName("body")[0].style.backgroundColor = "#000060";
-
+var r,g,b;
+LampAssistant.prototype.onTick = function() {
+    colour = this.r;
+    colour=colour*256;
+    colour += this.g;
+    colour=colour*256;
+    colour += this.b;
+    
+    bg.style.backgroundColor = "#"+colour.toString(16);
+    this.controller.get("lamp-bg").update(this.r+ " "+ this.g+ " "+ this.b);
+    this.r--;
+    this.b++;
 }
 
 
 LampAssistant.prototype.setup = function() {
-    bg = this.controller.get("lamp-bg");
+    this.r=255;this.g=0;this.b=0;
+    bg = this.controller.document.getElementsByTagName("body")[0]
   // bind the button to its handler
-    Mojo.Event.listen(bg, Mojo.Event.tap, 
-        this.onClick.bind(this));	/* this function is for setup tasks that have to happen when the scene is first created */
+    // Mojo.Event.listen(bg, Mojo.Event.tap, 
+        // this.onClick.bind(this));	/* this function is for setup tasks that have to happen when the scene is first created */
+    this.controller.window.setInterval(this.onTick.bind(this), 10);
 };
 
 LampAssistant.prototype.activate = function(event) {
