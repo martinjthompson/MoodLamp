@@ -59,9 +59,8 @@ LampAssistant.prototype.onTick = function() {
     colstring="000000".substr(0,6-colstring.length)+colstring;
     colstring="#"+colstring;
     bg.style.backgroundColor = colstring;
-    Mojo.Log.info("Colour:"+colstring);
     this.controller.get("lamp-bg").update(rgb[0]+ " "+ rgb[1]+ " "+rgb[2]+"<p>'"+colstring+"'");
-    this.current_colour_hsl[0]=this.current_colour_hsl[0] + 0.001;
+    this.current_colour_hsl[0]=this.current_colour_hsl[0] + 0.0001;
     if (this.current_colour_hsl[0] > 1.0){
 	this.current_colour_hsl[0]-=1.0;
     }
@@ -75,17 +74,44 @@ LampAssistant.prototype.setup = function() {
   // bind the button to its handler
     // Mojo.Event.listen(bg, Mojo.Event.tap, 
         // this.onClick.bind(this));	/* this function is for setup tasks that have to happen when the scene is first created */
-    this.controller.window.setInterval(this.onTick.bind(this), 20);
+
+    this.activateHandler=this.activate.bind(this);
+    Mojo.Event.listen(this.controller.stageController.document, Mojo.Event.stageActivate, this.activateHandler);
+ 
+    this.deactivateHandler=this.deactivate.bind(this);
+    Mojo.Event.listen(this.controller.stageController.document, Mojo.Event.stageDeactivate, this.deactivateHandler);
+ 
 };
 
+LampAssistant.prototype.startAnimation = function() {
+    Mojo.Log.info("startAnimation ID="+this.intervalID);
+    if (this.intervalID){
+	Mojo.Log.info("Timer already running");
+    }
+    else {
+    this.intervalID=this.controller.window.setInterval(this.onTick.bind(this), 20);
+    Mojo.Log.info("startAnimation ID="+this.intervalID);
+    }
+}
+
+LampAssistant.prototype.stopAnimation = function() {
+    Mojo.Log.info("stopAnimation ID="+this.intervalID);
+    clearInterval(this.intervalID);
+    this.intervalID=null;
+}
+
 LampAssistant.prototype.activate = function(event) {
+    Mojo.Log.info("activate");
 	/* put in event handlers here that should only be in effect when this scene is active. For
 	   example, key handlers that are observing the document */
+    this.startAnimation()
 };
 
 LampAssistant.prototype.deactivate = function(event) {
+    Mojo.Log.info("deactivate");
 	/* remove any event handlers you added in activate and do any other cleanup that should happen before
 	   this scene is popped or another scene is pushed on top */
+    this.stopAnimation()
 };
 
 LampAssistant.prototype.cleanup = function(event) {
