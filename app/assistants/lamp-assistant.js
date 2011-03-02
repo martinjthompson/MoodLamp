@@ -47,9 +47,45 @@ function HueToRgb(m1, m2, hue) {
 }
 
 var    bg;
+// A transition is an array of:
+//  (starting HSLs
+//  ending HSLs
+//  number of frames to get from one end to the other)
+// which are then translated into a collection of deltas
+// when the frame count is exceeded, move onto the next (start, end, count) collection.
+// If none, cycle round 
+
+function get_stepsize(start, end, numsteps)
+{
+    stepsize = (end-start)/numsteps;
+    return stepsize;
+}
+
+var configured_transitions = Array(
+    {
+	"start_hsl":Array(0,0,0),
+	"end_hsl":Array(1.0,0.5,1.0),
+	"numsteps":20
+    }
+    )
+LampAssistant.prototype.startTransition = function(transition) {
+    this.transition = transition
+    this.current_colour_hsl = this.transition["start_hsl"].slice(0); // make a copy
+    this.delta_hsl = Array(0,0,0);
+    for (var i = 0; i < this.delta_hsl.length;i++)
+    {
+	this.delta_hsl[i] = get_stepsize(this.transition["start_hsl"][i],
+					 this.transition["end_hsl"][i],
+					 this.transition["numsteps"]);
+    }
+    Mojo.Log.info("Current transition start:"+this.transition["start_hsl"]);
+    Mojo.Log.info("Current transition end:"+this.transition["end_hsl"]);
+    Mojo.Log.info("Steps:"+this.delta_hsl);
+    this.stepcount = 0;
+}
+
 LampAssistant.prototype.onTick = function() {
     rgb = hsl2rgb(this.current_colour_hsl);
-    //rgb=Array(255,255,0);
     colour = rgb[0];
     colour = colour*256;
     colour += rgb[1];
@@ -60,16 +96,21 @@ LampAssistant.prototype.onTick = function() {
     colstring="#"+colstring;
     bg.style.backgroundColor = colstring;
     this.controller.get("lamp-bg").update(rgb[0]+ " "+ rgb[1]+ " "+rgb[2]+"<p>'"+colstring+"'");
-    this.current_colour_hsl[0]=this.current_colour_hsl[0] + 0.0001;
-    if (this.current_colour_hsl[0] > 1.0){
-	this.current_colour_hsl[0]-=1.0;
+
+    for (var i = 0; i < this.delta_hsl.length;i++)
+    {
+	this.current_colour_hsl[i] += this.delta_hsl[i];
     }
+    Mojo.Log.info("Step:"+this.stepcount+" hsl "+this.current_colour_hsl);
+    this.stepcount ++;
+    if (this.stepcount >= this.transition["numsteps"]) {
+	this.startTransition(configured_transitions[0]);
+}
 }
 
 
 LampAssistant.prototype.setup = function() {
     Mojo.Log.info("Info");
-    this.current_colour_hsl=Array(0.0, 1.0, 0.5);
     bg = this.controller.document.getElementsByTagName("body")[0]
   // bind the button to its handler
     // Mojo.Event.listen(bg, Mojo.Event.tap, 
@@ -81,6 +122,7 @@ LampAssistant.prototype.setup = function() {
     this.deactivateHandler=this.deactivate.bind(this);
     Mojo.Event.listen(this.controller.stageController.document, Mojo.Event.stageDeactivate, this.deactivateHandler);
  
+    this.startTransition(configured_transitions[0]);
 };
 
 LampAssistant.prototype.startAnimation = function() {
@@ -89,7 +131,7 @@ LampAssistant.prototype.startAnimation = function() {
 	Mojo.Log.info("Timer already running");
     }
     else {
-    this.intervalID=this.controller.window.setInterval(this.onTick.bind(this), 20);
+    this.intervalID=this.controller.window.setInterval(this.onTick.bind(this), 40);
     Mojo.Log.info("startAnimation ID="+this.intervalID);
     }
 }
