@@ -6,4 +6,21 @@
 	"main": "index.html",
 	"title": "Mood Lamp",
 	"icon": "icon.png"
+	"smallicon": "icon32.png"
+	"support": { 
+		   "email": { 
+		   	    "address" : "moodlamp@parallelpoints.com", 
+			    "subject" : "Support" 
+			    }
+		},
+	"resources" : 
+	[
+	         {
+                     "type": "scene",
+                     "label": "Help",
+                     "sceneName": "helpscene"
+                 }
+	]
+	"copyright" : "&copy; Copyright 2011 Martin Thompson"
+	
 }
