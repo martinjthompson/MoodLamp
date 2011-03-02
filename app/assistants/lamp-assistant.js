@@ -62,23 +62,58 @@ function get_stepsize(start, end, numsteps)
 }
 
 var configured_transitions = Array(
-    Array ( // nasty fast test
-{
-    "start_hsl":Array(0.0,1.0,0.5),
-    "end_hsl"  :Array(0.3,1.0,0.5),
-    "numsteps":30
-},
-{
-    "start_hsl":Array(0.5,1.0,0.5),
-    "end_hsl"  :Array(0.8,1.0,0.5),
-    "numsteps":30
-}
-	),
-    Array ( // Slowly All around the wheel
+ // Slowly All around the wheel
+    Array (
 {
     "start_hsl":Array(0.0,1.0,0.5),
     "end_hsl"  :Array(1.0,1.0,0.5),
     "numsteps":1000
+}
+	),
+ // Black -> Green -> Black
+    Array (
+{
+    "start_hsl":Array(0.33,1.0,0.0),
+    "end_hsl"  :Array(0.33,1.0,0.5),
+    "numsteps":300
+},
+{
+    "start_hsl":Array(0.33,1.0,0.5),
+    "end_hsl"  :Array(0.33,1.0,0.0),
+    "numsteps":300
+}
+	),
+ // Black -> Red -> Black
+    Array (
+{
+    "start_hsl":Array(0.00,1.0,0.0),
+    "end_hsl"  :Array(0.00,1.0,0.5),
+    "numsteps":300
+},
+{
+    "start_hsl":Array(0.00,1.0,0.5),
+    "end_hsl"  :Array(0.00,1.0,0.0),
+    "numsteps":300
+}
+	),
+ // Black -> Blue -> Black
+    Array (
+{
+    "start_hsl":Array(0.66,1.0,0.0),
+    "end_hsl"  :Array(0.66,1.0,0.5),
+    "numsteps":300
+},
+{
+    "start_hsl":Array(0.66,1.0,0.5),
+    "end_hsl"  :Array(0.66,1.0,0.0),
+    "numsteps":300
+}
+	),
+    Array ( // Faster all around the wheel
+{
+    "start_hsl":Array(0.0,1.0,0.5),
+    "end_hsl"  :Array(1.0,1.0,0.5),
+    "numsteps":250
 }
 	)
     )
@@ -115,32 +150,40 @@ LampAssistant.prototype.onTick = function() {
     {
 	this.current_colour_hsl[i] += this.delta_hsl[i];
     }
-    Mojo.Log.info("Step:"+this.stepcount+" hsl "+this.current_colour_hsl);
     this.stepcount ++;
     if (this.stepcount >= this.transition["numsteps"]) {
 	this.transition_no ++;
 	if (this.transition_no >= this.transition_set.length) {
 	    this.transition_no = 0;
         }
-        this.startTransition(configured_transitions[0][this.transition_no]);
+        this.startTransition(this.transition_set[this.transition_no]);
     }
 }
 
+LampAssistant.prototype.onTap = function() {
+    this.transition_no = 0;
+    this.transition_set_id ++;
+    if (this.transition_set_id >= configured_transitions.length) {
+	this.transition_set_id = 0;
+    }
+    this.transition_set = configured_transitions[this.transition_set_id];
+    this.startTransition(this.transition_set[this.transition_no]);
+    Mojo.Log.info("New transition id:"+this.transition_set_id);
+}
 
 LampAssistant.prototype.setup = function() {
     Mojo.Log.info("Info");
     bg = this.controller.document.getElementsByTagName("body")[0]
-  // bind the button to its handler
-    // Mojo.Event.listen(bg, Mojo.Event.tap, 
-        // this.onClick.bind(this));	/* this function is for setup tasks that have to happen when the scene is first created */
+    Mojo.Event.listen(bg, Mojo.Event.tap, this.onTap.bind(this));
 
     this.activateHandler=this.activate.bind(this);
     Mojo.Event.listen(this.controller.stageController.document, Mojo.Event.stageActivate, this.activateHandler);
  
     this.deactivateHandler=this.deactivate.bind(this);
     Mojo.Event.listen(this.controller.stageController.document, Mojo.Event.stageDeactivate, this.deactivateHandler);
- 
+    
     this.transition_set = configured_transitions[0];
+    this.transition_set_id = 0;
     this.startTransition(this.transition_set[0]);
     this.transition_no = 0;
 };
