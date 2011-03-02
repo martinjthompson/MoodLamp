@@ -62,11 +62,25 @@ function get_stepsize(start, end, numsteps)
 }
 
 var configured_transitions = Array(
-    {
-	"start_hsl":Array(0,0,0),
-	"end_hsl":Array(1.0,0.5,1.0),
-	"numsteps":20
-    }
+    Array ( // nasty fast test
+{
+    "start_hsl":Array(0.0,1.0,0.5),
+    "end_hsl"  :Array(0.3,1.0,0.5),
+    "numsteps":30
+},
+{
+    "start_hsl":Array(0.5,1.0,0.5),
+    "end_hsl"  :Array(0.8,1.0,0.5),
+    "numsteps":30
+}
+	),
+    Array ( // Slowly All around the wheel
+{
+    "start_hsl":Array(0.0,1.0,0.5),
+    "end_hsl"  :Array(1.0,1.0,0.5),
+    "numsteps":1000
+}
+	)
     )
 LampAssistant.prototype.startTransition = function(transition) {
     this.transition = transition
@@ -95,7 +109,7 @@ LampAssistant.prototype.onTick = function() {
     colstring="000000".substr(0,6-colstring.length)+colstring;
     colstring="#"+colstring;
     bg.style.backgroundColor = colstring;
-    this.controller.get("lamp-bg").update(rgb[0]+ " "+ rgb[1]+ " "+rgb[2]+"<p>'"+colstring+"'");
+//    this.controller.get("lamp-bg").update(rgb[0]+ " "+ rgb[1]+ " "+rgb[2]+"<p>'"+colstring+"'");
 
     for (var i = 0; i < this.delta_hsl.length;i++)
     {
@@ -104,8 +118,12 @@ LampAssistant.prototype.onTick = function() {
     Mojo.Log.info("Step:"+this.stepcount+" hsl "+this.current_colour_hsl);
     this.stepcount ++;
     if (this.stepcount >= this.transition["numsteps"]) {
-	this.startTransition(configured_transitions[0]);
-}
+	this.transition_no ++;
+	if (this.transition_no >= this.transition_set.length) {
+	    this.transition_no = 0;
+        }
+        this.startTransition(configured_transitions[0][this.transition_no]);
+    }
 }
 
 
@@ -122,7 +140,9 @@ LampAssistant.prototype.setup = function() {
     this.deactivateHandler=this.deactivate.bind(this);
     Mojo.Event.listen(this.controller.stageController.document, Mojo.Event.stageDeactivate, this.deactivateHandler);
  
-    this.startTransition(configured_transitions[0]);
+    this.transition_set = configured_transitions[0];
+    this.startTransition(this.transition_set[0]);
+    this.transition_no = 0;
 };
 
 LampAssistant.prototype.startAnimation = function() {
