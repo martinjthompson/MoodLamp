@@ -173,6 +173,18 @@ LampAssistant.prototype.onTap = function() {
 
 LampAssistant.prototype.setup = function() {
     Mojo.Log.info("Info");
+
+    MenuAttr = {omitDefaultItems: true};
+    MenuModel = {
+    visible: true,
+    items: [
+	Mojo.Menu.editItem,
+    {label: "Help...", command: 'do-help', shortcut: 'h'}
+	]
+    };
+    this.controller.setupWidget(Mojo.Menu.appMenu, MenuAttr, MenuModel);
+
+
     bg = this.controller.document.getElementsByTagName("body")[0]
     Mojo.Event.listen(bg, Mojo.Event.tap, this.onTap.bind(this));
 
@@ -223,3 +235,4 @@ LampAssistant.prototype.cleanup = function(event) {
 	/* this function should do any cleanup needed before the scene is destroyed as 
 	   a result of being popped off the scene stack */
 };
+
