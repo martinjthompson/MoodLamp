@@ -5,6 +5,8 @@ function LampAssistant() {
 	   that needs the scene controller should be done in the setup function below. */
 }
 
+// Thanks to jkd (http://www.codingforums.com/member.php?u=3) for hte next two functions
+// Found here: http://www.codingforums.com/showthread.php?t=11156
 function hsl2rgb(hsl) {
 	var m1, m2, hue;
 	var r, g, b;
@@ -26,7 +28,6 @@ function hsl2rgb(hsl) {
 	}
 	return Array(Math.round(r),Math.round(g),Math.round(b));
 }
-
 function HueToRgb(m1, m2, hue) {
 	var v;
 	if (hue < 0)
