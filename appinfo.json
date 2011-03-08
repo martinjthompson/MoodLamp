@@ -8,6 +8,7 @@
 	"icon": "icon.png",
 	"smallicon": "icon32.png",
 	"support": { 
+		   "url": "http://parallelpoints.com/moodlamp/index.html",
 		   "email": { 
 		   	    "address" : "moodlamp@parallelpoints.com", 
 			    "subject" : "Support" 
