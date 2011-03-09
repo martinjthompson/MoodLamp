@@ -1,5 +1,9 @@
+// Copyright 2010 Martin Thompson (martin@parallelpoints.com).
+// 
+// Redistribution and use in source and binary forms, with or 
+// without modification, are permitted.
+
 function StageAssistant() {
-    /* this is the creator function for your stage assistant object */
 }
 
 StageAssistant.prototype.setup = function() {

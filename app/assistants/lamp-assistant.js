@@ -1,11 +1,12 @@
+// Copyright 2010 Martin Thompson (martin@parallelpoints.com).
+// 
+// Redistribution and use in source and binary forms, with or 
+// without modification, are permitted.
+
 function LampAssistant() {
-	/* this is the creator function for your scene assistant object. It will be passed all the 
-	   additional parameters (after the scene name) that were passed to pushScene. The reference
-	   to the scene controller (this.controller) has not be established yet, so any initialization
-	   that needs the scene controller should be done in the setup function below. */
 }
 
-// Thanks to jkd (http://www.codingforums.com/member.php?u=3) for hte next two functions
+// Thanks to jkd (http://www.codingforums.com/member.php?u=3) for the next two functions
 // Found here: http://www.codingforums.com/showthread.php?t=11156
 function hsl2rgb(hsl) {
 	var m1, m2, hue;
@@ -128,9 +129,9 @@ LampAssistant.prototype.startTransition = function(transition) {
 					 this.transition["end_hsl"][i],
 					 this.transition["numsteps"]);
     }
-    Mojo.Log.info("Current transition start:"+this.transition["start_hsl"]);
-    Mojo.Log.info("Current transition end:"+this.transition["end_hsl"]);
-    Mojo.Log.info("Steps:"+this.delta_hsl);
+    // Mojo.Log.info("Current transition start:"+this.transition["start_hsl"]);
+    // Mojo.Log.info("Current transition end:"+this.transition["end_hsl"]);
+    // Mojo.Log.info("Steps:"+this.delta_hsl);
     this.stepcount = 0;
 }
 
@@ -169,11 +170,11 @@ LampAssistant.prototype.onTap = function() {
     }
     this.transition_set = configured_transitions[this.transition_set_id];
     this.startTransition(this.transition_set[this.transition_no]);
-    Mojo.Log.info("New transition id:"+this.transition_set_id);
+    // Mojo.Log.info("New transition id:"+this.transition_set_id);
 }
 
 LampAssistant.prototype.setup = function() {
-    Mojo.Log.info("Info");
+    // Mojo.Log.info("Info");
 
     MenuAttr = {omitDefaultItems: true};
     MenuModel = {
@@ -202,31 +203,31 @@ LampAssistant.prototype.setup = function() {
 };
 
 LampAssistant.prototype.startAnimation = function() {
-    Mojo.Log.info("startAnimation ID="+this.intervalID);
+    // Mojo.Log.info("startAnimation ID="+this.intervalID);
     if (this.intervalID){
 	Mojo.Log.info("Timer already running");
     }
     else {
     this.intervalID=this.controller.window.setInterval(this.onTick.bind(this), 40);
-    Mojo.Log.info("startAnimation ID="+this.intervalID);
+    // Mojo.Log.info("startAnimation ID="+this.intervalID);
     }
 }
 
 LampAssistant.prototype.stopAnimation = function() {
-    Mojo.Log.info("stopAnimation ID="+this.intervalID);
+    // Mojo.Log.info("stopAnimation ID="+this.intervalID);
     clearInterval(this.intervalID);
     this.intervalID=null;
 }
 
 LampAssistant.prototype.activate = function(event) {
-    Mojo.Log.info("activate");
+    // Mojo.Log.info("activate");
 	/* put in event handlers here that should only be in effect when this scene is active. For
 	   example, key handlers that are observing the document */
     this.startAnimation()
 };
 
 LampAssistant.prototype.deactivate = function(event) {
-    Mojo.Log.info("deactivate");
+    // Mojo.Log.info("deactivate");
 	/* remove any event handlers you added in activate and do any other cleanup that should happen before
 	   this scene is popped or another scene is pushed on top */
     this.stopAnimation()
